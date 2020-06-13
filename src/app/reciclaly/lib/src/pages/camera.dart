@@ -1,7 +1,11 @@
-import 'package:camera/camera.dart';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:reciclaly/src/pages/prueba.dart';
 
 
@@ -80,7 +84,6 @@ class _CameraState extends State<Camera> {
                   materialTapTargetSize: MaterialTapTargetSize.padded,
                   child: Icon(Icons.brightness_1, color: Colors.grey[300], size: 50,),
                   onPressed: () async{
-                    print("yeeeesss");
                     try{
                       final path = join(
                         (await getTemporaryDirectory()).path,
@@ -94,6 +97,20 @@ class _CameraState extends State<Camera> {
                           builder: (context) => DisplayPictureScreen(imagePath: path),
                         ),
                       );
+
+                      String url = "https://southcentralus.api.cognitive.microsoft.com/customvision/v3.0/Prediction/8387252a-819f-4d55-b1ca-da6f7a307e7f/classify/iterations/test/url";
+
+                      var response = await http.post(url, 
+                      headers: {
+                        "Prediction-Key": "baea86091f75406ea8a57f9d83ba7d3b",
+                        "Content-Type": "application/json",
+                      },
+                      body: json.encode({'Url': 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Papierosa_1_ubt_0069.jpeg/1200px-Papierosa_1_ubt_0069.jpeg'}),
+                      );
+
+
+                      final decodedresponse = json.decode(response.body);
+                      print(decodedresponse);
 
                     }catch(ex){
                       print(ex);
